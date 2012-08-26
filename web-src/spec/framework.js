@@ -18,6 +18,28 @@ describe("Basic Framework Setup", function() {
         waitsFor(function() {
             return jQuerySentinal !== false;
         }, "jQuery not loaded.", 250);
+
+        runs(function() {
+            expect($(document).length).toEqual(1);
+        });
+    });
+
+    it("loads underscore", function() {
+        var _Sentinal;
+        runs(function() {
+            _Sentinal = false;
+            requirejs(['underscore'], function(_) {
+                _Sentinal = _;
+            });
+        });
+
+        waitsFor(function() {
+            return _Sentinal;
+        }, "Underscore not loaded.", 250);
+
+        runs(function() {
+            expect(typeof _.each).toEqual('function');
+        });
     });
 });
 
