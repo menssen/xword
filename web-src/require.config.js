@@ -2,8 +2,7 @@ require.config({
     paths: {
         jquery: '../lib/jquery',
         underscore: '../lib/underscore',
-        // backbonecore: '../lib/backbone-0.9.2',
-        // backbone: '../lib/backbone-relational-0.5.0'
+        backbone: '../lib/backbone'
     },
     shim: {
         jquery: {
@@ -12,15 +11,11 @@ require.config({
         underscore: {
             deps: ['jquery'],
             exports: '_'
+        },
+        backbone: {
+            deps: ['underscore'],
+            exports: 'Backbone'
         }
-        // backbonecore: {
-        //     deps: ['underscore'],
-        //     exports: 'Backbone'
-        // },
-        // backbone: {
-        //     deps: ['backbonecore'],
-        //     exports: 'Backbone'
-        // }
     },
     baseUrl: 'src'
 });

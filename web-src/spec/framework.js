@@ -41,6 +41,24 @@ describe("Basic Framework Setup", function() {
             expect(typeof _.each).toEqual('function');
         });
     });
+
+    it("loads backbone", function() {
+        var backboneSentinal;
+        runs(function() {
+            backboneSentinal = false;
+            requirejs(['backbone'], function(Backbone) {
+                backboneSentinal = Backbone;
+            });
+        });
+
+        waitsFor(function() {
+            return backboneSentinal;
+        }, "Backbone not loaded.", 250);
+
+        runs(function() {
+            expect(typeof Backbone.View).toEqual('function');
+        });
+    });
 });
 
 });
