@@ -1,0 +1,79 @@
+#!/usr/bin/env phantomjs
+
+function JasmineTestRunner(page, terminator) {
+    this.tries = 0;
+    this.max_tries = 10;
+    this.page = page;
+    this.terminator = terminator;
+};
+
+JasmineTestRunner.prototype = {
+    get_status: function() {
+        return this.page.evaluate(function() { return reporter.status; });
+    },
+
+    terminate: function() {
+        switch (this.get_status()) {
+            case "success":
+                this.terminator(0);
+                break;
+            case "fail":
+                this.terminator(1);
+                break;
+            default:
+                this.terminator(2);
+        }
+    }
+};
+
+
+require('system');
+
+hasArgs = false;
+if (phantom.args.length) {
+    hasArgs = true;
+    specs = phantom.args;
+}
+
+
+var page = require('webpage').create();
+var runner = new JasmineTestRunner(page, phantom.exit);
+page.onError = function(msg, trace) {
+    console.log(msg);
+    trace.forEach(function(item) {
+        console.log('  ', item.file, ':', item.line);
+    });
+};
+
+page.onConsoleMessage = function(msg) {
+    if (typeof msg == "object") {
+        
+        return;
+    }
+    if (msg == "ConsoleReporter finished") {
+        runner.terminate();
+        return;
+    }
+    console.log(msg);
+};
+
+page.open(phantom.libraryPath + "/../web-src/jasmine.html", function(status) {
+    if (status != "success") {
+        console.log("can't load the page");
+        phantom.exit(1);
+        return;
+    }
+
+    page.evaluate(function() {
+        window.isPhantom = true;
+    });
+
+    if (!hasArgs) {
+        page.evaluate(function() {
+            window.phantomSpecs = [];
+        });
+        return;
+    }
+
+    page.evaluate('function() { window.phantomSpecs = ["' + specs.join('","') + '"]; }');
+});
