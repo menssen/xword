@@ -19,3 +19,7 @@ require.config({
     },
     baseUrl: 'src'
 });
+
+if (!jasmine) {
+    requirejs(['modules/main']);
+}
